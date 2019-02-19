@@ -2,8 +2,9 @@
 
 class Config(object):
     DEBUG = True
+    SECRET_KEY = '123'
     #数据库配置
-    SQLALCHEMY_DATABASE_URI = "mysql+pymysql://root:mysql@127.0.0.1:3306/information_test"
+    SQLALCHEMY_DATABASE_URI = "mysql+pymysql://root:123456@127.0.0.1:3306/information"
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SQLALCHEMY_COMMIT_ON_TEARDOWN = True #数据库内容发送改变之后,自动提交
 
@@ -11,7 +12,7 @@ class Config(object):
 class ProductConfig(object):
     DEBUG = False
     #数据库配置
-    SQLALCHEMY_DATABASE_URI = "mysql+pymysql://root:mysql@127.0.0.1:3306/information_test1"
+    SQLALCHEMY_DATABASE_URI = "mysql+pymysql://root:123456@127.0.0.1:3306/information"
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SQLALCHEMY_COMMIT_ON_TEARDOWN = True #数据库内容发送改变之后,自动提交
 
