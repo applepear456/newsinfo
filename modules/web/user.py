@@ -2,7 +2,7 @@
 from flask import Blueprint,make_response,request,jsonify,render_template,session,g,current_app,redirect,url_for
 from utils.captcha.captcha import captcha
 from utils.response_code import RET,error_map
-from models import User,News,Category
+from models import User,News,Category,tbl_user_collection
 from apps import app,db,photos
 from werkzeug.security import check_password_hash,generate_password_hash
 import re
@@ -46,7 +46,7 @@ def register():
                     user.password_hash = generate_password_hash(password)
                     user.nick_name = mobile
                     db.session.add(user)
-                    # db.session.commit()
+                    db.session.commit()
                     session["user_id"] = user.id
                     session["nick_name"] = user.nick_name
                     session["mobile"] = user.mobile
@@ -91,13 +91,14 @@ def login():
         return jsonify(resp)
 
 # 退出登录
-@user_blue.route('/logout',methods=['post'])
+@user_blue.route('/logout',methods=['post','get'])
 def logout():
-    session.pop('user_id',None)
-    session.pop('nick_name',None)
-    session.pop('mobile',None)
-    resp = {'errno':RET.OK,'errmsg':error_map['RET.OK']}
-    return jsonify(resp)
+    session.pop('user_id')
+    session.pop('nick_name')
+    session.pop('mobile')
+    # resp = {'errno':RET.OK,'errmsg':error_map['RET.OK']}
+    # return jsonify(resp)
+    return redirect(url_for('index.index'))
 
 # 个人中心页面
 @user_blue.route('/user_info')
@@ -223,9 +224,15 @@ def news_list():
     data = {'news_list': news.items,'total_page':news.pages,'current_page':news.page}
     return render_template('news/user_news_list.html',data=data)
 
-# # 新闻详情
-# @user_blue.route('/news/<int:id>')
-# def xiangqing(id):
-#     # id = request.args.get('id')
-#     print(id)
-#     return 'ok'
+# 我的收藏
+@user_blue.route('/collection')
+@user_islogin
+def collection():
+    user = g.user
+    p = request.args.get('p', 1)
+    current_page = int(p)
+    page_counts = 5
+    news_list = user.news_collection.paginate(current_page,page_counts,False)
+    data = {'news_list':news_list.items,'current_page':news_list.page,'total_page':news_list.pages}
+    print(data)
+    return render_template('news/user_collection.html',data=data)
